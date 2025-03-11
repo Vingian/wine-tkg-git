@@ -1,0 +1,25 @@
+From b0b38f95b7d8aa8091054e4392d8db6a4a8fab83 Mon Sep 17 00:00:00 2001
+From: Vingian <89702391+Vingian@users.noreply.github.com>
+Date: Tue, 11 Mar 2025 10:02:02 -0300
+Subject: [PATCH] wow64 builtin so
+
+---
+ dlls/ntdll/unix/loader.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/dlls/ntdll/unix/loader.c b/dlls/ntdll/unix/loader.c
+index 0bade5b35f02..13076a1b05bf 100644
+--- a/dlls/ntdll/unix/loader.c
++++ b/dlls/ntdll/unix/loader.c
+@@ -1179,7 +1179,11 @@ static NTSTATUS find_builtin_dll( UNICODE_STRING *nt_name, void **module, SIZE_T
+     OBJECT_ATTRIBUTES attr;
+     NTSTATUS status = STATUS_DLL_NOT_FOUND;
+     BOOL found_image = FALSE;
++#ifdef _WIN64
++    BOOL try_so = TRUE;
++#else
+     BOOL try_so = (search_machine == current_machine && (!load_machine || load_machine == search_machine));
++#endif
+ 
+     for (i = namepos = 0; i < len; i++)
+         if (nt_name->Buffer[i] == '/' || nt_name->Buffer[i] == '\\') namepos = i + 1;
