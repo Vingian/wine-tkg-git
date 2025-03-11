@@ -218,7 +218,7 @@ function build_vrclient {
   cd ../..
 
   cd build/vrclient.win32
-  if [ "$_NOLIB32" != "true" ]; then
+  if [ "$_NOLIB32" != "true" ] && [ "$_NOLIB32" != "wow64" ]; then
     winemaker $WINEMAKERFLAGS --wine32 -L"$_nowhere/proton_dist_tmp/$_lib32name/" -L"$_nowhere/proton_dist_tmp/$_lib32name/wine/" -I"$_nowhere/openvr/build/vrclient.win32/vrclient/" -I"$_nowhere/openvr/build/vrclient.win32/" vrclient
     make -e CC="winegcc -m32" CXX="wineg++ -m32 $_cxx_addon" -C "$_nowhere/openvr/build/vrclient.win32/vrclient" -j$(nproc) && strip --strip-debug vrclient/vrclient.dll.so || exit 1
   fi
@@ -290,7 +290,7 @@ function build_lsteamclient {
   cd ../..
 
   cd build/lsteamclient.win32
-  if [ "$_NOLIB32" != "true" ]; then
+  if [ "$_NOLIB32" != "true" ] && [ "$_NOLIB32" != "wow64" ]; then
     winemaker $WINEMAKERFLAGS --dll -DSTEAM_API_EXPORTS -Dprivate=public -Dprotected=public --wine32 .
     sed -re 's@_LDFLAGS=@_LDFLAGS= -static-libgcc -static-libstdc++ -ldl @' -i "$_nowhere/Proton/build/lsteamclient.win32/Makefile"
     make -e CC="winegcc -m32" CXX="wineg++ -m32 $_cxx_addon" -C "$_nowhere/Proton/build/lsteamclient.win32" -j$(nproc) && strip --strip-debug lsteamclient.dll.so || exit 1
@@ -429,7 +429,7 @@ function build_mediaconverter {
       cd "$_nowhere"/Proton/media-converter
 
       # 32-bit
-      if [ "$_NOLIB32" != "true" ]; then
+      if [ "$_NOLIB32" != "true" ] && [ "$_NOLIB32" != "wow64" ]; then
         mkdir -p "$_nowhere"/Proton/build/mediaconv32
         rm -rf "$_nowhere"/Proton/build/mediaconv32/*
         ( if [ -d '/usr/lib32/pkgconfig' ]; then # Typical Arch path
@@ -514,7 +514,7 @@ function build_steamhelper {
       winemaker $WINEMAKERFLAGS --wine32 --guiexe -lsteam_api -lole32 -I"$_nowhere/Proton/lsteamclient/steamworks_sdk_142/" -I"$_nowhere/openvr/headers/" -L"$_nowhere/Proton/steam_helper" .
     fi
 
-    if [ "$_NOLIB32" != "true" ]; then
+    if [ "$_NOLIB32" != "true" ] && [ "$_NOLIB32" != "wow64" ]; then
       # 32-bit
       if [ -e "$_nowhere"/Proton/steam_helper/32/libsteam_api.so ]; then
         make -e CC="winegcc -m32" CXX="wineg++ -m32 $_cxx_addon" -C "$_nowhere/Proton/build/steam.win32" LIBRARIES="-L$_nowhere/Proton/steam_helper/32/ -lsteam_api -lole32 -lshlwapi -lmsi -ldl -static-libgcc -static-libstdc++" -j$(nproc) && strip --strip-debug steam.exe.so || exit 1
